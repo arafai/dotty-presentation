@@ -1,4 +1,4 @@
-# Welcome to **GitPitch**
+# Welcome to **Dotty**
 
 ---?image=assets/img/code.jpg&opacity=60&position=left&size=45% 100%
 @title[Slide Decks for Developers]
