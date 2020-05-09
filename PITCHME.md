@@ -20,8 +20,10 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 <br />
 <br />
 
-- DOT (Dependent Object Types)
+- Dotty language (**D**ependent **O**bject **T**ypes Calculus)
 - Dotty compiler (dotc)
-- TASTY intermediate representation
+- TASTY
 
+NOTE: 
+TASTY: a serialization format for semantic trees
 ---
