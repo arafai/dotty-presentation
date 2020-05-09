@@ -3,6 +3,8 @@
 ---
 
 ### Why ?
+<br />
+<br />
 
 - Strengthen Scala's foundations
 - Make Scala easier and safer to use
@@ -15,6 +17,8 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 ---
 
 ### How ?
+<br />
+<br />
 
 - DOT (Dependent Object Types)
 - Dotty compiler (dotc)
