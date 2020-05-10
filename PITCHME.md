@@ -105,3 +105,13 @@ def isAnyEmpty(s:SeqModule)(a: s.Seq, b:s.Seq) =
     s.isEmpty(a) && s.isEmpty(b)
 ```
 ---
+
+#### END
+
+- [Martin Odersky - Compilers are Databases](https://www.youtube.com/watch?v=WxyyJyB_Ssc)  
+- [Nada Amin - DOT: Scala Types from Theory to Practice](https://www.youtube.com/watch?v=fjj_fv346lY)  
+- [Paolo Giarrusso — The DOT Calculus: An Introduction for Scala Programmers](https://www.youtube.com/watch?v=OVu7XzHY5U0)  
+- [Guillaume Martres - Future proofing Scala the TASTY intermediate rep](https://www.youtube.com/watch?v=OVu7XzHY5U0)  
+
+
+---
