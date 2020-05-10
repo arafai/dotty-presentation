@@ -90,8 +90,8 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 ```scala
 trait SeqModule {
   type Elem; type Seq
-  def isEmpty(xs:Seq): Boolean
-  def empty:Seq
+  def isEmpty(xs: Seq): Boolean
+  def empty: Seq
 }
 
 def listSeq[A]: SeqModule { type Elem = A } = 
@@ -109,6 +109,27 @@ val intSeqModule: SeqModule { type Elem = Int } = listSeq[Int]
 //intSeqModule.Seq is abstract
 def listInt(xs: List[Int]): intSeqModule.Seq = xs // error
 ```
+
++++
+
+```scala
+type SeqModule = {
+  type Elem; type Seq
+  def isEmpty: Seq => Boolean
+  def empty: Seq
+}
+
+def listSeq[A]: SeqModule & { type Elem = A } = 
+    new {
+      type Elem = A; type Seq = List[A]
+      def isEmpty: Seq => Boolean = _.isEmpty
+      def empty  = Nil
+}
+def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) = 
+    s.isEmpty(a) && s.isEmpty(b)
+
+```
+
 ---
 
 #### END
