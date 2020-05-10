@@ -101,12 +101,13 @@ def listSeq[A]: SeqModule { type Elem = A } =
       def empty  = Nil
 }
 
-def isAnyEmpty(s:SeqModule)(a: s.Seq, b:s.Seq) = 
+def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
 
 val intSeqModule: SeqModule { type Elem = Int } = listSeq[Int]
 
-def listInt(xs: List[Int]): intSeqModule.Seq = xs // big fat error
+//intSeqModule.Seq is abstract
+def listInt(xs: List[Int]): intSeqModule.Seq = xs // error
 ```
 ---
 
