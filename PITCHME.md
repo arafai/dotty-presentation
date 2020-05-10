@@ -27,6 +27,8 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 ---
 
 #### TASTY (Typed Abstract Syntax Trees) - goals
+<br />
+<br />
 
 - maintain Scala binary compatibility
 - store output of compiler (intermediate representation)
@@ -36,6 +38,8 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 ---
 
 #### Dotty compiler (dotc) - goals
+<br />
+<br />
 
 - inspired by temporal databases (runId, phaseId)
 - new compiler architecture, mostly functional
@@ -74,6 +78,8 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 +++
 
 #### DOT calculus - how ?
+<br />
+<br />
 
 - path-dependent, abstract type and refinement types
 - union and intersection types 
@@ -98,3 +104,4 @@ def listSeq[A]: SeqModule { type Elem = A } =
 def isAnyEmpty(s:SeqModule)(a: s.Seq, b:s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
 ```
+---
