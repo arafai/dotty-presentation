@@ -81,7 +81,7 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 <br />
 <br />
 
-- path-dependent, abstract type and refinement types
+- path-dependent, abstract type members and refinement types
 - union and intersection types 
 - first class functions, type and method declaration etc
 
@@ -103,6 +103,10 @@ def listSeq[A]: SeqModule { type Elem = A } =
 
 def isAnyEmpty(s:SeqModule)(a: s.Seq, b:s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
+
+val intSeqModule: SeqModule { type Elem = Int } = listSeq[Int]
+
+def listInt(xs: List[Int]): intSeqModule.Seq = xs // big fat error
 ```
 ---
 
