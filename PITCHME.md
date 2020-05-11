@@ -35,6 +35,16 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 - extra information for tooling, IDE 
 - macros
 
++++
+
+Side note: Scala migration
+
+- Scala 2 compiler: Pickle format
+- Scala 3/Dotty compiler: TASTY format
+- Scala 2 is Tasty and Scala 3 eats Pickles
+
+Note: Some feature in Scala 2 are deprecated in Scala 3 -> migration  
+
 ---
 
 #### Dotty compiler (dotc) - goals
@@ -81,9 +91,9 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 <br />
 <br />
 
-- path-dependent, abstract type members and refinement types
+- path-dependent type, abstract type members and structural typing 
 - union and intersection types 
-- first class functions, type and method declaration etc
+- first class functions
 
 +++ 
 
@@ -112,25 +122,90 @@ def listInt(xs: List[Int]): intSeqModule.Seq = xs // error
 
 +++
 
-```scala
+```scala 3
 type SeqModule = {
   type Elem; type Seq
-  def isEmpty: Seq => Boolean
+  val isEmpty: Seq => Boolean
   def empty: Seq
 }
 
 def listSeq[A]: SeqModule & { type Elem = A } = 
     new {
       type Elem = A; type Seq = List[A]
-      def isEmpty: Seq => Boolean = _.isEmpty
+      val isEmpty: Seq => Boolean = _.isEmpty
       def empty  = Nil
 }
+//val listSeq: (tyArg: { type A }) =>
+//  SeqModule & { type Elem = tyArg.A }
+
+
 def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
 
 ```
 
 ---
+
+Dotty - Essentials foundations # Intersection types  
+<br />
+
+```scala 3
+  trait Barkable {
+    def bark(): Unit = {}
+    def animals(): List[Int]
+  }
+  trait Growlable {
+    def growl(): Unit = {}
+    def animals(): List[String]
+  }
+
+  def both(x: Barkable & Growlable) = {
+    x.bark()
+    x.growl()
+    val res:List[Int & String] = x.animals()
+  }
+  class Both extends Barkable with Growlable {
+    def animals(): List[Int & String] = List.empty
+  }
+ 
+  both(Both())
+ 
+```
+
+---
+
+Dotty - Essentials foundations # Union types  
+<br />
+
+```scala 3
+  trait Barkable {
+    def bark(): Unit = {}
+    def animals(): List[Int]
+  }
+  trait Growlable {
+    def growl(): Unit = {}
+    def animals(): List[String]
+  }
+
+  def both(x: Barkable & Growlable) = {
+    x.bark()
+    x.growl()
+    val res:List[Int & String] = x.animals()
+  }
+  class Both extends Barkable with Growlable {
+    def animals(): List[Int & String] = List.empty
+  }
+ 
+  both(Both())
+ 
+```
+
+
+
+
+
+
+```
 
 #### END
 
