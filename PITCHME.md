@@ -98,6 +98,9 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 
 +++ 
 
+#### DOT calculus 
+<br />
+
 ```scala
 trait SeqModule {
   type Elem; type Seq
@@ -123,6 +126,9 @@ def listInt(xs: List[Int]): intSeqModule.Seq = xs // error
 
 +++
 
+#### DOT calculus 
+<br />
+
 ```scala 3
 type SeqModule = {
   type Elem; type Seq
@@ -147,6 +153,9 @@ def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) =
 
 ---
 
+#### Dotty 
+<br />
+
 - Dotty - Essentials foundations 
 - Dotty - New constructs
 - Dotty - Restrictions
@@ -161,12 +170,12 @@ Dotty - Essentials foundations # Intersection types (GLB)
   trait Barkable {
     def bark() = {}
     def animals(): List[Int]
-    def print():Printer[Barkable] 
+    def print(): Printer[Barkable] 
   }
   trait Growlable {
     def growl() = {}
     def animals(): List[String]
-    def print():Printer[Growlable]
+    def print(): Printer[Growlable]
   }
   class Both extends Barkable with Growlable {
     def animals(): List[Int & String] = ???
@@ -191,17 +200,21 @@ Dotty - Essentials foundations # Union types (LUB)
 
   def both(x: Barkable | Growlable) = {
     x match {
-      case b:Barkable => b.bark
-      case g:Growlable => g.growl
+      case b: Barkable => b.bark
+      case g: Growlable => g.growl
     }
   }
   
   if(true) Barkable("dog") else Growlable("lion")
 // Object & Product & Serializable
-  val res:Barkable | Growlable =  if(true) Barkable("dog") else Growlable("lion")
+  val res: Barkable | Growlable =  if(true) Barkable("dog") else Growlable("lion")
 ```
 
 +++
+
+Dotty - Essentials foundations # Union types (LUB) 
+<br />
+
 ```scala 3
 trait C[+T]
 trait D
