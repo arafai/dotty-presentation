@@ -163,8 +163,8 @@ def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) =
 <br />
 
 - Dotty - Essentials foundations 
-- Dotty - New constructs
-- Dotty - Restrictions
+- Dotty - New features
+- Dotty - Simplifications
 
 ---
 
@@ -351,7 +351,7 @@ Function1[Entry, Entry#Key] {
 
 ---
 
-Dotty - New Constructs # Enums 
+Dotty - New features # Enums 
 <br />
 <br />
 
@@ -378,7 +378,7 @@ enum Color extends java.lang.Enum[Color] { case Red, Green, Blue }
 
 ---
 
-Dotty - New Constructs # (Generalized) Algebraic Data Types 
+Dotty - New features # (Generalized) Algebraic Data Types 
 <br />
 <br />
 
@@ -400,18 +400,22 @@ new Option.Some(2)
 
 ---
 
-Dotty - New Constructs # Kind Polymorphism
+Dotty - New features # Kind Polymorphism
 <br />
 <br />
 
 ```scala 3
-Int // first level, type value
-List // higher kinded, type constructor
+trait Functor[F[_]] 
+
+Int // proper types, type value 
+List // first-order, type constructor
+Functor // higher-order, abstracting  unary (or over first order) type constructors 
 
 Int <: Any // * 
 List <: [+X] =>> Any // * -> * 
-Map <: [X, +Y] =>> Any// * -> * -> * 
+Map <: [X, +Y] =>> Any// * -> * -> * (curried) 
 List[Int] <: Any // *
+Functor // (* -> *) -> * 
 
 def f[T <: AnyKind] = () 
 f[Int]
@@ -422,7 +426,7 @@ f[[X] =>> String]
 
 ---
 
-Dotty - New Constructs # Polymorphic functions
+Dotty - New features # Polymorphic functions
 <br />
 <br />
 
@@ -449,7 +453,7 @@ def rank2[B, C](f: Id ~> List, b:B, c:C) = (f(b), f(c))
 
 +++
 
-Dotty - New Constructs # Polymorphic functions
+Dotty - New features # Polymorphic functions
 <br />
 <br />
 
@@ -460,14 +464,140 @@ val id = [A] => (a: A) => a
 
 def rank2[A, B, C](f: [A] => A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
 
+// bonus
+type ~>[F[?],G[?]] = [A] => F[A] => G[A]
+// FunctionK or natural transformation using polymorphic functions, no cats needed
 ```
 
 ---
-- Dotty - Restrictions
+
+Dotty - New features # Trait parameters
+<br />
+
+
+```scala 3
+trait Greeting(val name: String) {
+  def msg = s"How are you, $name"
+}
+
+class C extends Greeting("Bob") {
+  println(msg)
+}
+
+class D extends C with Greeting("Bill") // error: parameter passed twice
+```
+
 ---
 
+Dotty - Simplifications # Given instances
+<br />
+
+```scala 3
+trait Ord[T] {
+  def compare(x: T, y: T): Int
+  def (x: T) < (y: T) = compare(x, y) < 0
+  def (x: T) > (y: T) = compare(x, y) > 0
+}
+
+given intOrd as Ord[Int] {
+  def compare(x: Int, y: Int) =
+    if (x < y) -1 else if (x > y) +1 else 0
+}
+
+given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
+  def compare(xs: List[T], ys: List[T]): Int = ???
+}
+
+// anonymous givens
+given Ord[Int] { ??? }
+
+//abstract class Conversion[-T, +U] extends (T => U) defined in predef
+given Conversion[String, Token] {
+  def apply(str: String): Token = new KeyWord(str)
+}
+```
+
+---
+
+Dotty - Simplifications # Using clause
+<br />
+
+```scala 3
+def max[T](x: T, y: T)(using ord: Ord[T]): T =
+  if ord.compare(x, y) < 0 then y else x
+
+max(2, 3)(using intOrd)
+max(2, 3)
+
+// anonymous contet param
+def maximum[T](xs: List[T])(using Ord[T]): T =
+  xs.reduceLeft(max)
+
+// multiple clauses
+def f(u: Universe)(using ctx: u.Context)(using s: ctx.Symbol, k: ctx.Kind) = ...
+
+//summoning
+summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
+```
+
+---
+
+Dotty - Simplifications # Extension methods
+<br />
+
+```scala 3
+case class Circle(x: Double, y: Double, radius: Double)
+
+def (c: Circle).circumference: Double = c.radius * math.Pi * 2
+
+val circle = Circle(0, 0, 1)
+circle.circumference
+
+// operators
+def (x: Circle) < (y: Circle) = ...
+def (x: Elem) +: (xs: Seq[Elem]) = ...
+def (x: Number) min (y: Number) = ...
+"ab" < "c"
+1 +: List(2, 3)
+x min 3
+
+// more weird stuff
+```
+
+---
+
+Dotty - New features # Typeclass derivation
+<br />
+
+```scala 3
+enum Tree[T] derives Eq, Ordering, Show {
+  case Branch[T](left: Tree[T], right: Tree[T])
+  case Leaf[T](elem: T)
+}
+
+given [T: Eq]       as Eq[Tree[T]]    = Eq.derived
+given [T: Ordering] as Ordering[Tree] = Ordering.derived
+given [T: Show]     as Show[Tree]     = Show.derived
+```
+
+---
+Dropped features 
+<br />
+
+- DelayedInit,
+- Existential types,
+- Procedure syntax,
+- Class shadowing,
+- XML literals,
+- Symbol literals,
+- Auto application,
+- Weak conformance,
+- Compound types
+
+---
 
 #### END
+<br />
 
 - [Martin Odersky - Compilers are Databases](https://www.youtube.com/watch?v=WxyyJyB_Ssc)  
 - [Nada Amin - DOT: Scala Types from Theory to Practice](https://www.youtube.com/watch?v=fjj_fv346lY)  
