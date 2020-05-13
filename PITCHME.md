@@ -1,4 +1,5 @@
 # **Dotty**
+### Let's make Scala great again
 
 ---
 
@@ -146,26 +147,36 @@ def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) =
 
 ---
 
-Dotty - Essentials foundations # Intersection types  
+- Dotty - Essentials foundations 
+- Dotty - New constructs
+- Dotty - Restrictions
+
+---
+
+Dotty - Essentials foundations # Intersection types (GLB) 
 <br />
 
 ```scala 3
+  trait Printer[-A]
   trait Barkable {
-    def bark(): Unit = {}
+    def bark() = {}
     def animals(): List[Int]
+    def print():Printer[Barkable] 
   }
   trait Growlable {
-    def growl(): Unit = {}
+    def growl() = {}
     def animals(): List[String]
+    def print():Printer[Growlable]
   }
 
   def both(x: Barkable & Growlable) = {
     x.bark()
     x.growl()
-    val res:List[Int & String] = x.animals()
+    lazy val res:List[Int & String] = x.animals()
   }
   class Both extends Barkable with Growlable {
-    def animals(): List[Int & String] = List.empty
+    def animals(): List[Int & String] = ???
+    def print(): Printer[Barkable | Growlable] = ???
   }
  
   both(Both())
@@ -174,38 +185,251 @@ Dotty - Essentials foundations # Intersection types
 
 ---
 
-Dotty - Essentials foundations # Union types  
+Dotty - Essentials foundations # Union types (LUB) 
 <br />
 
 ```scala 3
-  trait Barkable {
-    def bark(): Unit = {}
-    def animals(): List[Int]
-  }
-  trait Growlable {
-    def growl(): Unit = {}
-    def animals(): List[String]
-  }
+  case class Barkable(bark:String)
+  case class Growlable(growl:String)
 
-  def both(x: Barkable & Growlable) = {
-    x.bark()
-    x.growl()
-    val res:List[Int & String] = x.animals()
+  def both(x: Barkable | Growlable) = {
+    x match {
+      case b:Barkable => b.bark
+      case g:Growlable => g.growl
+    }
   }
-  class Both extends Barkable with Growlable {
-    def animals(): List[Int & String] = List.empty
-  }
- 
-  both(Both())
- 
+  
+  if(true) Barkable("dog") else Growlable("lion")
+// Object & Product & Serializable
+  val res:Barkable | Growlable =  if(true) Barkable("dog") else Growlable("lion")
 ```
 
++++
+```scala 3
+trait C[+T]
+trait D
+trait E
+class A extends C[A] with D
+class B extends C[B] with D with E
 
+val x = if(true) A() else B()
+// C[A | B] & D
 
+trait A { def hello: String }
+trait B { def hello: String }
 
+def test(x: A | B) = x.hello // error: value `hello` is not a member of A | B
+```
 
+---
+
+Dotty - Essentials foundations # Type Lambdas 
+<br />
+<br />
+
+```scala
+trait Functor[A, +M[_]]{
+  def map[B] (f: A => B): M[B]
+}
+
+case class SeqFunctor[A](seq: Seq[A])
+  extends Functor[A, Seq]{
+ 
+  override def map[B](f: A => B): Seq[B] =
+    seq.map(f)
+  }
+
+SeqFunctor(List(1,2)).map(_ * 2)
+
+case class MapFunctor[K,V](mapKV:Map[K,V])
+  extends Functor[V, ({type L[a] = Map[K,a]})#L]{
+ 
+  override def map[V2](f: V => V2): Map[K, V2] =
+    mapKV.map { case (k,v) => k -> f(v)}   
+  }
+```
+
++++
+
+```scala 3
+trait Functor[A, +M[_]]{
+  def map[B] (f: A => B): M[B]
+}
+type mapF[K] = [V] =>> Map[K,V]
+
+case class MapFunctor[K,V](mapKV:Map[K,V])
+  extends Functor[V, mapF[K]]{
+
+  override def map[V2](f: V => V2): Map[K, V2] =
+    mapKV.map { case (k,v) => k -> f(v)}
+}
+
+MapFunctor(Map("one" -> 2)).map(_ * 2)
+//val res0: Map[String, Int] = Map(one -> 4)
+
+type MF = [X, Y] =>> Map[Y, X]
+
+type T[X] = R // shorthand type T = [X] =>> R
+type F2[A, +B] = A => B // shorthand  type F2 = [A, B] =>> A => B
+```
+
+---
+
+Dotty - Essentials foundations # Match types
+<br />
+<br />
+
+```scala 3
+type Elem[X] = X match {
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+}
+
+Elem[String]       =:=  Char
+Elem[Array[Int]]   =:=  Int
+Elem[List[Float]]  =:=  Float
+Elem[Nil.type]     =:=  Nothing
+```
+
++++
+
+```scala 3
+type Elem[X] = X match {
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+}
+
+Elem[String]       =:=  Char
+Elem[Array[Int]]   =:=  Int
+Elem[List[Float]]  =:=  Float
+Elem[Nil.type]     =:=  Nothing
+```
+---
+
+Dotty - Essentials foundations # Dependent Function Types 
+<br />
+<br />
+
+```scala 3
+
+trait Entry { type Key; val key: Key }
+
+def extractKey(e: Entry): e.Key = e.key          // a dependent method
+val extractor: (e: Entry) => e.Key = extractKey  // a dependent function value
+
+/*
+Function1[Entry, Entry#Key] {
+  def apply(e: Entry): e.Key
+}
+*/
+```
+
+---
+
+Dotty - New Constructs # Enums 
+<br />
+
+```scala 3
+enum Color(val rgb: Int) {
+  case Red   extends Color(0xFF0000)
+  case Green extends Color(0x00FF00)
+  case Blue  extends Color(0x0000FF)
+}
+
+val red = Color.Red
+//val red: Color = Red
+red.ordinal
+//val res0: Int = 0
+
+Color.valueOf("Blue")
+// val res0: Color = Blue
+Color.values
+//val res1: Array[Color] = Array(Red, Green, Blue)
+
+enum Color extends java.lang.Enum[Color] { case Red, Green, Blue }
 
 ```
+
+---
+
+Dotty - New Constructs # (Generalized) Algebraic Data Types 
+<br />
+
+```scala 3
+enum Option[+T] {
+  case Some(x: T) extends Option[T] // extends can be omitted
+  case None       extends Option[Nothing] // if extends omitted, Nothing is inferred 
+}
+
+Option.Some("hello")
+//val res1: t2.Option[String] = Some(hello)
+
+Option.None
+//val res2: t2.Option[Nothing] = None
+
+new Option.Some(2)
+//val res3: t2.Option.Some[Int] = Some(2)
+```
+
+---
+
+Dotty - New Constructs # Kind Polymorphism
+<br />
+
+```scala 3
+Int // first level, type value
+List // higher kinded, type constructor
+
+Int <: Any // * 
+List <: [+X] =>> Any // * -> * 
+Map <: [X, +Y] =>> Any// * -> * -> * 
+List[Int] <: Any // *
+
+def f[T <: AnyKind] = () 
+f[Int]
+f[List]
+f[Map]
+f[[X] =>> String]
+```
+
+---
+
+Dotty - New Constructs # Polymorphic functions
+<br />
+
+```scala
+def rank1[A](a: A) = List(a)
+// rank 1 polymorphism, OK
+def rank2[A, B, C](f: A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
+//rank 2 polymorphism, error
+// f = Function1 monomorphic
+
+type Id[A] = A
+trait ~>[F[_],G[_]] {
+  def apply[A](a: F[A]): G[A]
+}
+
+def rank2[B, C](f: Id ~> List, b:B, c:C) = (f(b), f(c))
+// rank 2 using FunctionK ( natural transformation)
+ 
+
+def foo[A, B](f: A => List[A], b: B) = f(b) // rank 2 polymorphism
+
+```
+
++++
+
+```scala 3
+val id = [A] => (a: A) => a
+
+def rank2[A, B, C](f: [A] => A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
+
+```
+
+---
+
 
 #### END
 
