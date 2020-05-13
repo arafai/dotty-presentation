@@ -38,7 +38,10 @@ Make Scala easier and safer to use - Tame powerful constructs such as implicits 
 
 +++
 
-Side note: Scala migration
+#### Side note: Scala migration
+
+
+<br />
 
 - Scala 2 compiler: Pickle format
 - Scala 3/Dotty compiler: TASTY format
@@ -65,10 +68,12 @@ Note: Some feature in Scala 2 are deprecated in Scala 3 -> migration
 - foundation for Dotty's type system
 - type soundness
 - formative
+- formal verification
 
 +++
 
 ```scala
+// scala2
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 val ms:MMap[Int, MSet[Int]] = MMap.empty
@@ -102,6 +107,7 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 <br />
 
 ```scala
+// scala2
 trait SeqModule {
   type Elem; type Seq
   def isEmpty(xs: Seq): Boolean
@@ -130,6 +136,7 @@ def listInt(xs: List[Int]): intSeqModule.Seq = xs // error
 <br />
 
 ```scala 3
+// dot-ish
 type SeqModule = {
   type Elem; type Seq
   val isEmpty: Seq => Boolean
@@ -193,6 +200,7 @@ Dotty - Essentials foundations # Intersection types (GLB)
 
 Dotty - Essentials foundations # Union types (LUB) 
 <br />
+<br />
 
 ```scala 3
   case class Barkable(bark:String)
@@ -213,6 +221,7 @@ Dotty - Essentials foundations # Union types (LUB)
 +++
 
 Dotty - Essentials foundations # Union types (LUB) 
+<br />
 <br />
 
 ```scala 3
@@ -238,6 +247,7 @@ Dotty - Essentials foundations # Type Lambdas
 <br />
 
 ```scala
+// scala2
 trait Functor[A, +M[_]]{
   def map[B] (f: A => B): M[B]
 }
@@ -260,6 +270,10 @@ case class MapFunctor[K,V](mapKV:Map[K,V])
 ```
 
 +++
+
+Dotty - Essentials foundations # Type Lambdas 
+<br />
+<br />
 
 ```scala 3
 trait Functor[A, +M[_]]{
@@ -304,17 +318,17 @@ Elem[Nil.type]     =:=  Nothing
 
 +++
 
-```scala 3
-type Elem[X] = X match {
-  case String => Char
-  case Array[t] => t
-  case Iterable[t] => t
-}
+Dotty - Essentials foundations # Match types
+<br />
+<br />
 
-Elem[String]       =:=  Char
-Elem[Array[Int]]   =:=  Int
-Elem[List[Float]]  =:=  Float
-Elem[Nil.type]     =:=  Nothing
+```scala 3
+type LeafElem[X] = X match {
+  case String => Char
+  case Array[t] => LeafElem[t]
+  case Iterable[t] => LeafElem[t]
+  case AnyVal => X
+}
 ```
 ---
 
@@ -339,6 +353,7 @@ Function1[Entry, Entry#Key] {
 ---
 
 Dotty - New Constructs # Enums 
+<br />
 <br />
 
 ```scala 3
@@ -366,6 +381,7 @@ enum Color extends java.lang.Enum[Color] { case Red, Green, Blue }
 
 Dotty - New Constructs # (Generalized) Algebraic Data Types 
 <br />
+<br />
 
 ```scala 3
 enum Option[+T] {
@@ -386,6 +402,7 @@ new Option.Some(2)
 ---
 
 Dotty - New Constructs # Kind Polymorphism
+<br />
 <br />
 
 ```scala 3
@@ -408,13 +425,18 @@ f[[X] =>> String]
 
 Dotty - New Constructs # Polymorphic functions
 <br />
+<br />
+
 
 ```scala
+// scala 2
 def rank1[A](a: A) = List(a)
 // rank 1 polymorphism, OK
 def rank2[A, B, C](f: A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
-//rank 2 polymorphism, error
-// f = Function1 monomorphic
+// rank 2 polymorphism, error
+// not valid scala code
+// def rank2[A, B, C](f: A => List[A] forAll {A}, b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
+// f = Function1 which is monomorphic even though the method is polymorphic in its arguments
 
 type Id[A] = A
 trait ~>[F[_],G[_]] {
@@ -424,20 +446,25 @@ trait ~>[F[_],G[_]] {
 def rank2[B, C](f: Id ~> List, b:B, c:C) = (f(b), f(c))
 // rank 2 using FunctionK ( natural transformation)
  
-
-def foo[A, B](f: A => List[A], b: B) = f(b) // rank 2 polymorphism
-
 ```
 
 +++
 
+Dotty - New Constructs # Polymorphic functions
+<br />
+<br />
+
+
 ```scala 3
+//scala 3
 val id = [A] => (a: A) => a
 
 def rank2[A, B, C](f: [A] => A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
 
 ```
 
+---
+- Dotty - Restrictions
 ---
 
 
