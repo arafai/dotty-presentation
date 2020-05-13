@@ -94,7 +94,7 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 
 - path-dependent type, abstract type members and structural typing 
 - union and intersection types 
-- first class functions
+- small set of features, no inheritance, no traits
 
 +++ 
 
@@ -168,19 +168,16 @@ Dotty - Essentials foundations # Intersection types (GLB)
     def animals(): List[String]
     def print():Printer[Growlable]
   }
-
-  def both(x: Barkable & Growlable) = {
-    x.bark()
-    x.growl()
-    lazy val res:List[Int & String] = x.animals()
-  }
   class Both extends Barkable with Growlable {
     def animals(): List[Int & String] = ???
     def print(): Printer[Barkable | Growlable] = ???
   }
  
+  def both(x: Barkable & Growlable) = {
+    x.bark()
+    x.growl()
+  }
   both(Both())
- 
 ```
 
 ---
