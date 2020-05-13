@@ -63,7 +63,6 @@ Note: Some feature in Scala 2 are deprecated in Scala 3 -> migration
 
 #### DOT calculus - goals
 <br />
-<br />
 
 - foundation for Dotty's type system
 - type soundness
