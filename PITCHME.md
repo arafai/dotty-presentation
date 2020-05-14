@@ -41,7 +41,7 @@
 
 - Scala 2 compiler: Pickle format
 - Scala 3/Dotty compiler: TASTY format
-- Scala 2 is Tasty and Scala 3 eats Pickles
+- Scala 2 understands Tasty and Scala 3 understands Pickle
 
 Note: Some feature in Scala 2 are deprecated in Scala 3 -> migration  
 
