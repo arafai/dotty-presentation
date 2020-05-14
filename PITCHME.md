@@ -11,10 +11,6 @@
 - make Scala easier and safer to use
 - improve the consistency and expressiveness of Scala's language constructs
 
-Note:
-Strengthen Scala's foundations - Make the full programming language compatible with the foundational work on the DOT calculus and apply the lessons learned from that work.
-Make Scala easier and safer to use - Tame powerful constructs such as implicits to provide a gentler learning curve. Remove warts and puzzlers.
-
 ---
 
 ### How ?
@@ -214,7 +210,8 @@ Dotty - Essentials foundations # Union types (LUB)
   
   if(true) Barkable("dog") else Growlable("lion")
 // Object & Product & Serializable
-  val res: Barkable | Growlable =  if(true) Barkable("dog") else Growlable("lion")
+  val res: Barkable | Growlable =  
+    if(true) Barkable("dog") else Growlable("lion")
 ```
 
 +++
@@ -236,13 +233,13 @@ val x = if(true) A() else B()
 trait A { def hello: String }
 trait B { def hello: String }
 
-def test(x: A | B) = x.hello // error: value `hello` is not a member of A | B
+def test(x: A | B) = x.hello 
+// error: value `hello` is not a member of A | B
 ```
 
 ---
 
 Dotty - Essentials foundations # Type Lambdas 
-<br />
 <br />
 
 ```scala
@@ -339,8 +336,10 @@ Dotty - Essentials foundations # Dependent Function Types
 
 trait Entry { type Key; val key: Key }
 
-def extractKey(e: Entry): e.Key = e.key          // a dependent method
-val extractor: (e: Entry) => e.Key = extractKey  // a dependent function value
+def extractKey(e: Entry): e.Key = e.key          
+// a dependent method
+val extractor: (e: Entry) => e.Key = extractKey  
+// a dependent function value
 
 /*
 Function1[Entry, Entry#Key] {
@@ -409,7 +408,7 @@ trait Functor[F[_]]
 
 Int // proper types, type value 
 List // first-order, type constructor
-Functor // higher-order, abstracting  unary (or over first order) type constructors 
+Functor // higher-order, abstracting over unary (or over first order) type constructors 
 
 Int <: Any // * 
 List <: [+X] =>> Any // * -> * 
@@ -435,11 +434,15 @@ Dotty - New features # Polymorphic functions
 // scala 2
 def rank1[A](a: A) = List(a)
 // rank 1 polymorphism, OK
-def rank2[A, B, C](f: A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
+def rank2[A, B, C](f: A => List[A], b:B, c:C):(List[B], List[C]) =
+   (f(b), f(c)) 
 // rank 2 polymorphism, error
 // not valid scala code
-// def rank2[A, B, C](f: A => List[A] forAll {A}, b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
-// f = Function1 which is monomorphic even though the method is polymorphic in its arguments
+// def rank2[A, B, C](f: A => List[A] forAll {A},
+//                    b: B, c:C):(List[B], List[C]) = (f(b), f(c))
+ 
+// f = Function1 which is monomorphic 
+// even though the method is polymorphic in its arguments
 
 type Id[A] = A
 trait ~>[F[_],G[_]] {
@@ -462,11 +465,12 @@ Dotty - New features # Polymorphic functions
 //scala 3
 val id = [A] => (a: A) => a
 
-def rank2[A, B, C](f: [A] => A => List[A], b: B, c:C):(List[B], List[C]) = (f(b), f(c)) 
+def rank2[A, B, C](f: [A] => A => List[A], b: B, c:C):(List[B], List[C]) =
+   (f(b), f(c)) 
 
 // bonus
 type ~>[F[?],G[?]] = [A] => F[A] => G[A]
-// FunctionK or natural transformation using polymorphic functions, no cats needed
+// FunctionK or natural transformation using polymorphic functions
 ```
 
 ---
@@ -484,7 +488,8 @@ class C extends Greeting("Bob") {
   println(msg)
 }
 
-class D extends C with Greeting("Bill") // error: parameter passed twice
+class D extends C with Greeting("Bill") 
+// error: parameter passed twice
 ```
 
 ---
@@ -534,7 +539,7 @@ def maximum[T](xs: List[T])(using Ord[T]): T =
   xs.reduceLeft(max)
 
 // multiple clauses
-def f(u: Universe)(using ctx: u.Context)(using s: ctx.Symbol, k: ctx.Kind) = ...
+def f(u: Universe)(using ctx: u.Context)(using ...) = ...
 
 //summoning
 summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
@@ -562,6 +567,18 @@ def (x: Number) min (y: Number) = ...
 x min 3
 
 // more weird stuff
+```
+
+---
+
+Dotty - Simplifications # Eta expansion
+<br />
+
+```scala 3
+def m(x: Int, y: String) = ???
+val f = m // becomes: val f = (x: Int, y: String) => m(x, y)
+// scala 2 
+val f = m _
 ```
 
 ---
