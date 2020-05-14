@@ -104,7 +104,7 @@ with Int,scala.collection.mutable.Clearable with scala.collection.mutable.Shrink
 ```scala
 // scala2
 trait SeqModule {
-  type Elem; type Seq
+  type Elem; type Seq //abstract type
   def isEmpty(xs: Seq): Boolean
   def empty: Seq
 }
@@ -115,7 +115,7 @@ def listSeq[A]: SeqModule { type Elem = A } =
       def isEmpty(xs:  Seq)  = xs.isEmpty
       def empty  = Nil
 }
-
+//dependent type
 def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
 
