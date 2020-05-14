@@ -137,20 +137,17 @@ type SeqModule = {
   val isEmpty: Seq => Boolean
   def empty: Seq
 }
-
 def listSeq[A]: SeqModule & { type Elem = A } = 
     new {
       type Elem = A; type Seq = List[A]
       val isEmpty: Seq => Boolean = _.isEmpty
       def empty  = Nil
 }
-//val listSeq: (tyArg: { type A }) =>
-//  SeqModule & { type Elem = tyArg.A }
-
+val listSeq: (tyArg: { type A }) => // polymorphism
+ SeqModule & { type Elem = tyArg.A }
 
 def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) = 
     s.isEmpty(a) && s.isEmpty(b)
-
 ```
 
 ---
@@ -161,35 +158,6 @@ def isAnyEmpty(s: SeqModule)(a: s.Seq, b: s.Seq) =
 - Dotty - Essentials foundations 
 - Dotty - New features
 - Dotty - Simplifications
-
----
-
-Dotty - Essentials foundations # Intersection types (GLB) 
-<br />
-
-```scala 3
-  trait Printer[-A]
-  trait Barkable {
-    def bark() = {}
-    def animals(): List[Int]
-    def print(): Printer[Barkable] 
-  }
-  trait Growlable {
-    def growl() = {}
-    def animals(): List[String]
-    def print(): Printer[Growlable]
-  }
-  class Both extends Barkable with Growlable {
-    def animals(): List[Int & String] = ???
-    def print(): Printer[Barkable | Growlable] = ???
-  }
- 
-  def both(x: Barkable & Growlable) = {
-    x.bark()
-    x.growl()
-  }
-  both(Both())
-```
 
 ---
 
@@ -232,12 +200,43 @@ val x = if(true) A() else B()
 
 trait A { def hello: String }
 trait B { def hello: String }
-
 def test(x: A | B) = x.hello 
-// error: value `hello` is not a member of A | B
+
+// error: value `hello` is not a member of 
+// AnyRef which is the join of A | B
 ```
 
 ---
+
+Dotty - Essentials foundations # Intersection types (GLB) 
+<br />
+
+```scala 3
+  trait Printer[-A]
+  trait Barkable {
+    def bark() = {}
+    def animals(): List[Int]
+    def print(): Printer[Barkable] 
+  }
+  trait Growlable {
+    def growl() = {}
+    def animals(): List[String]
+    def print(): Printer[Growlable]
+  }
+  class Both extends Barkable with Growlable {
+    def animals(): List[Int & String] = ???
+    def print(): Printer[Barkable | Growlable] = ???
+  }
+ 
+  def both(x: Barkable & Growlable) = {
+    x.bark()
+    x.growl()
+  }
+  both(Both())
+```
+
+---
+
 
 Dotty - Essentials foundations # Type Lambdas 
 <br />
@@ -441,7 +440,7 @@ def rank2[A, B, C](f: A => List[A], b:B, c:C):(List[B], List[C]) =
 // def rank2[A, B, C](f: A => List[A] forAll {A},
 //                    b: B, c:C):(List[B], List[C]) = (f(b), f(c))
  
-// f = Function1 which is monomorphic 
+// trait Function1[-T1,+R] - monomorphic  
 // even though the method is polymorphic in its arguments
 
 type Id[A] = A
@@ -534,7 +533,7 @@ def max[T](x: T, y: T)(using ord: Ord[T]): T =
 max(2, 3)(using intOrd)
 max(2, 3)
 
-// anonymous contet param
+// anonymous context param
 def maximum[T](xs: List[T])(using Ord[T]): T =
   xs.reduceLeft(max)
 
