@@ -49,19 +49,16 @@ The Scala 3 macro will depend on Tasty format as opposed to the compiler interna
 
 #### Side note: Scala migration
 
-
 <br />
 
 - Scala 2 compiler: Pickle format
 - Scala 3/Dotty compiler: TASTY format
 - Scala 2 <- Tasty and Scala 3 <- Pickle
-
-Note: Some feature in Scala 2 are deprecated in Scala 3 -> migration  
+- some features from Scala 2 are deprecated in Scala 3
 
 ---
 
 #### Dotty compiler (dotc) - goals
-<br />
 <br />
 
 - inspired by temporal databases (runId, phaseId)
@@ -201,8 +198,9 @@ Dotty # Polymorphic functions
 
 
 ```scala 3
-//scala 3
-val id = [A] => (a: A) => a
+val idMono: Int => Int = x => x
+
+val idPoly = [A] => (a: A) => a
 
 // bonus
 type ~>[F[_],G[_]] = [A] => F[A] => G[A]
@@ -229,6 +227,28 @@ class D extends C with Greeting("Bill")
 ```
 
 ---
+
+Dotty # Optional braces
+<br />
+
+class C(x: Int) extends A:
+  def f = x
+
+enum Color:
+  case Red, Green, Blue
+
+---
+
+Dotty # Explicit Nulls (opt-in)
+<br />
+
+
+val x: String = null // error: found `Null`,  but required `String`
+
+val x: String|Null = null // ok
+
+---
+
 
 Dotty # Given instances
 <br />
@@ -273,9 +293,6 @@ max(2, 3)
 // anonymous context param
 def maximum[T](xs: List[T])(using Ord[T]): T =
   xs.reduceLeft(max)
-
-// multiple clauses
-def f(u: Universe)(using ctx: u.Context)(using ...) = ...
 
 //summoning
 summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
