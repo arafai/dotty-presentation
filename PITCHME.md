@@ -116,11 +116,8 @@ Dotty # Intersection types
 
 ```scala 3
   
-  class Barkable:
-    def bark()
- 
-  class Growlable:
-    def growl()
+  class Barkable(bark: String)
+  class Growlable(growl:String)
   
   class Both extends Barkable with Growlable
  
