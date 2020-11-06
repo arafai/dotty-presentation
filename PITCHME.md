@@ -11,6 +11,16 @@ Scala:
 
 ---
 
+### Scala
+<br />
+<br />
+
+- combines object-oriented and functional programming(OOFP)
+- static types, runs on the JVM
+- good support for concurrency and parallelism 
+
+--- 
+
 ### Dotty goals
 <br />
 <br />
