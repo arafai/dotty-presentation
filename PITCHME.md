@@ -121,7 +121,6 @@ Dotty # Intersection types
     x.bark()
     x.growl()
   }
-  both(Both())
 ```
 
 ---
@@ -211,6 +210,7 @@ type ~>[F[_],G[_]] = [A] => F[A] => G[A]
 
 Dotty # Trait parameters
 <br />
+<br />
 
 
 ```scala 3
@@ -230,6 +230,8 @@ class D extends C with Greeting("Bill")
 
 Dotty # Optional braces
 <br />
+<br />
+
 
 class C(x: Int) extends A:
   def f = x
@@ -240,6 +242,7 @@ enum Color:
 ---
 
 Dotty # Explicit Nulls (opt-in)
+<br />
 <br />
 
 
@@ -278,7 +281,7 @@ given Conversion[String, Token] {
 }
 ```
 
----
++++
 
 Dotty # Using clause
 <br />
