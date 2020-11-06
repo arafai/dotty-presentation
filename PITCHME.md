@@ -284,9 +284,6 @@ given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
 // anonymous givens
 given Ord[Int] { ??? }
 
-//abstract class Conversion[-T, +U] extends (T => U) defined in predef
-given Conversion[String, Token] {
-  def apply(str: String): Token = new KeyWord(str)
 }
 ```
 
@@ -305,9 +302,6 @@ max(2, 3)
 // anonymous context param
 def maximum[T](xs: List[T])(using Ord[T]): T =
   xs.reduceLeft(max)
-
-//summoning
-summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
 ```
 
 ---
