@@ -110,10 +110,10 @@ Dotty # Intersection types
 ```scala 3
   
   trait Barkable {
-    def bark() = {}
+    def bark()
   }
   trait Growlable {
-    def growl() = {}
+    def growl()
   }
   class Both extends Barkable with Growlable {}
  
