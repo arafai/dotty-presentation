@@ -232,11 +232,10 @@ Dotty # Optional braces
 <br />
 <br />
 
-
-class C(x: Int) extends A:
+class C(x: Int) extends A: <br />
   def f = x
 
-enum Color:
+enum Color:<br />
   case Red, Green, Blue
 
 ---
