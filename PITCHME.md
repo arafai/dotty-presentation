@@ -125,6 +125,7 @@ Dotty # Intersection types
     x.bark()
     x.growl()
   }
+
 ```
 
 ---
