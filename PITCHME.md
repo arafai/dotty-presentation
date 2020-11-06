@@ -254,7 +254,6 @@ val x: String|Null = null // ok
 
 ---
 
-
 Dotty # Given instances
 <br />
 
@@ -304,10 +303,15 @@ summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
 ```
 
 ---
+#### Recap 
 <br />
-<br />
-<br />
-END
+
+- improve the tooling (compiler, IDE support)
+- improve the language features (by using lessons learned from developing Scala 2)
+- ensure a smooth migration
+- drop some of the language features
+
+---
 
 ---
 
