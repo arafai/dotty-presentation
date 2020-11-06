@@ -109,13 +109,13 @@ Dotty # Intersection types
 
 ```scala 3
   
-  class Barkable {
+  class Barkable:
     def bark()
-  }
-  class Growlable {
+ 
+  class Growlable:
     def growl()
-  }
-  class Both extends Barkable with Growlable {}
+  
+  class Both extends Barkable with Growlable
  
   def both(x: Barkable & Growlable) = {
     x.bark()
@@ -232,11 +232,14 @@ Dotty # Optional braces
 <br />
 <br />
 
-class C(x: Int) extends A: <br />
+```scala 3
+class C(x: Int) extends A:
   def f = x
 
-enum Color:<br />
+enum Color:
   case Red, Green, Blue
+
+```
 
 ---
 
