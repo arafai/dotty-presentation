@@ -107,9 +107,6 @@ Dotty # Union types
   val res: Barkable | Growlable =  
     if(true) Barkable("dog") else Growlable("lion")
 
-  trait A { def hello: String }
-  trait B { def hello: String }
-  def test(x: A | B) = x.hello // error
 ```
 
 ---
@@ -320,7 +317,7 @@ summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
 - improve the tooling (compiler, IDE support)
 - improve the language features (by using lessons learned from developing Scala 2)
 - ensure a smooth migration
-- drop some of the language features
+- drop some language features
 
 ---
 
