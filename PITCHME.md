@@ -247,10 +247,11 @@ Dotty # Explicit Nulls (opt-in)
 <br />
 <br />
 
-
+```scala 3
 val x: String = null // error: found `Null`,  but required `String`
 
 val x: String|Null = null // ok
+```
 
 ---
 
